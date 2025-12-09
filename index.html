@@ -3,11 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Treasure Hunt Art (Fixed Rotation Overflow)</title>
+    <title>Treasure Hunt Art (Small Size)</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
         
-        /* [추가됨] 로고 스타일 */
+        /* 로고 스타일 (그대로 유지) */
         #logo {
             cursor: pointer;
             position: fixed;
@@ -16,23 +16,12 @@
             font-size: 24px;
             font-weight: bold;
             font-family: 'BookkGothic', sans-serif;
-            
-            /* 배경이 어두운 비디오이므로 글자색을 흰색으로 변경했습니다. */
             color: #fff;
-            
-            /* 떠다니는 먼지보다 위에 오도록 높은 z-index 부여 */
             z-index: 100;
-            
-            /* 가독성을 위한 그림자 (선택사항) */
             text-shadow: 0 0 5px rgba(0,0,0,0.5);
-            
             transition: color 0.3s ease, font-size 0.3s ease;
         }
-
-        #logo:hover {
-            font-size: 26px;
-            color: #ccc; /* 호버 시 약간 회색으로 */
-        }
+        #logo:hover { font-size: 26px; color: #ccc; }
 
         /* 비디오 스타일 */
         #bg-video {
@@ -63,56 +52,48 @@
 
         /* 팝업창 (모달) 스타일 */
         #modal {
-            display: none; /* Flex로 켜지도록 스크립트에서 제어 */
+            display: none; 
             position: fixed; top: 50%; left: 50%;
             transform: translate(-50%, -50%); 
             
-            /* 팝업창이 화면 밖으로 나가지 않게 최대 크기 제한 */
+            /* 최대 크기 제한 */
             max-width: 98vw;
             max-height: 98vh;
             
-            padding: 15px;
+            padding: 10px; /* 패딩도 살짝 줄임 */
             background: #ffffff; 
             border: 2px solid #000; 
             text-align: center; z-index: 10;
             box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
             
-            /* 내용물 중앙 정렬 */
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            
-            /* 혹시라도 내용이 넘치면 스크롤 생성 (안전장치) */
             overflow: auto;
         }
 
-        /* [핵심 수정] 팝업 내부 이미지 - 넘침 방지 */
+        /* [핵심 수정] 팝업 내부 이미지 크기 절반으로 축소 */
         #modal-img {
-            /* 1. 이미지 공간을 화면 짧은 변 기준의 정사각형으로 강제합니다. */
-            width: 80vmin;
-            height: 80vmin;
+            /* 기존 80vmin -> 40vmin으로 변경 (2배 작게) */
+            width: 20vmin;
+            height: 20vmin;
             
-            /* 2. 정사각형 공간 안에서 이미지 비율을 유지하며 꽉 차게 보여줍니다. */
             object-fit: contain;
-            
-            /* 3. 시계방향 90도 회전 (정사각형 안에서 돌므로 튀어나가지 않음) */
             transform: rotate(90deg); 
             
-            margin: 0 auto 15px auto; /* 아래쪽 여백 추가 */
+            margin: 0 auto 10px auto; 
             border: 1px solid #ddd;
             display: block;
         }
 
         /* 닫기 버튼 */
         #close-btn {
-            padding: 10px 25px; 
+            padding: 8px 20px; /* 버튼도 살짝 작게 */
             background: #000; color: #fff;
-            border: none; cursor: pointer; font-weight: bold; font-size: 16px;
+            border: none; cursor: pointer; font-weight: bold; font-size: 14px;
             transition: background 0.3s;
-            /* 버튼이 확실히 위에 오도록 설정 */
             position: relative; z-index: 20; 
-            /* 이미지가 회전하면서 버튼 공간을 침범하지 않도록 마진 추가 */
-            margin-top: 10px;
+            margin-top: 5px;
         }
         #close-btn:hover { background: #333; }
     </style>
@@ -137,7 +118,7 @@
     </div>
 
     <script>
-        /* [추가됨] 홈 이동 함수 */
+        /* 홈 이동 링크 */
         const targetUrl = 'https://mingyunbong-netizen.github.io/home/#';
 
         function goHome() {
@@ -281,7 +262,6 @@
             setTimeout(() => {
                 const stage = stages[currentStageIndex];
                 modalImg.src = stage.popupImage;
-                // [수정됨] flex로 표시하여 중앙 정렬 적용
                 modal.style.display = 'flex'; 
             }, 500);
         });
