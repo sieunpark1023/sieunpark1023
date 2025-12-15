@@ -3,88 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Treasure Hunt Art (Sieun's World)</title>
+    <title>Treasure Hunt Art</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
         
-        /* 로고 스타일 */
         #logo {
-            cursor: pointer;
-            position: fixed;
-            top: 20px; left: 20px;
-            font-size: 24px; font-weight: bold;
-            font-family: 'BookkGothic', sans-serif;
-            color: #fff;
-            z-index: 100;
-            text-shadow: 0 0 5px rgba(0,0,0,0.5);
-            transition: color 0.3s ease, font-size 0.3s ease;
+            cursor: pointer; position: fixed; top: 20px; left: 20px;
+            font-size: 24px; font-weight: bold; font-family: 'BookkGothic', sans-serif;
+            color: #fff; z-index: 100; text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
-        #logo:hover { font-size: 26px; color: #ccc; }
 
-        /* 비디오 스타일 */
         #bg-video {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover; z-index: 1; opacity: 0.8; transition: opacity 1s;
         }
 
-        /* 보물찾기 버튼 (+) */
         #treasure-btn {
-            position: absolute; background: transparent; 
-            font-size: 25px; font-weight: 900; color: #fff; cursor: pointer;
+            position: absolute; font-size: 25px; font-weight: 900; color: #fff; cursor: pointer;
             z-index: 2; user-select: none;
             text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #ff00de, 0 0 40px #ff00de;
-            transition: transform 0.2s;
-        }
-        #treasure-btn:hover { transform: scale(1.5) rotate(90deg); }
-
-        /* 떠다니는 먼지들 */
-        .dust-wrapper {
-            position: absolute; z-index: 3; pointer-events: none;
         }
 
-        .dust-photo {
-            width: 100%; height: auto; display: block; 
-            cursor: pointer; pointer-events: auto; 
-            transition: transform 0.05s linear;
-        }
+        .dust-wrapper { position: absolute; z-index: 3; pointer-events: none; }
+        .dust-photo { width: 100%; height: auto; display: block; cursor: pointer; pointer-events: auto; }
 
-        /* 팝업창 (모달) 스타일 */
         #modal {
-            display: none; 
-            position: fixed; top: 50%; left: 50%;
-            transform: translate(-50%, -50%); 
-            max-width: 98vw; max-height: 98vh;
-            padding: 10px;
-            background: #ffffff; 
-            border: 2px solid #000; 
-            text-align: center; z-index: 10;
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: auto;
+            display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
+            max-width: 98vw; max-height: 98vh; padding: 10px;
+            background: #ffffff; border: 2px solid #000; text-align: center; z-index: 10;
+            flex-direction: column; align-items: center; justify-content: center;
         }
-
-        /* 팝업 내부 이미지 (작은 사이즈) */
         #modal-img {
-            width: 40vmin; height: 40vmin;
-            object-fit: contain;
-            transform: rotate(90deg); 
-            margin: 0 auto 10px auto; 
-            border: 1px solid #ddd;
-            display: block;
+            width: 40vmin; height: 40vmin; object-fit: contain; transform: rotate(90deg); 
+            margin: 0 auto 10px auto; border: 1px solid #ddd; display: block;
         }
-
-        /* 닫기 버튼 */
         #close-btn {
-            padding: 8px 20px; 
-            background: #000; color: #fff;
-            border: none; cursor: pointer; font-weight: bold; font-size: 14px;
-            transition: background 0.3s;
-            position: relative; z-index: 20; 
-            margin-top: 5px;
+            padding: 8px 20px; background: #000; color: #fff; border: none; cursor: pointer; font-weight: bold;
         }
-        #close-btn:hover { background: #333; }
     </style>
 </head>
 <body>
@@ -95,30 +50,17 @@
 
     <audio id="popup-audio" loop></audio>
 
-    <div id="logo" onclick="goHome()">
-        서사, 위기속에서
-    </div>
-
-    <video id="bg-video" autoplay muted loop playsinline>
-        <source src="" type="video/mp4">
-    </video>
-
+    <div id="logo" onclick="goHome()">서사, 위기속에서</div>
+    <video id="bg-video" autoplay muted loop playsinline><source src="" type="video/mp4"></video>
     <div id="treasure-btn">+</div>
-    
     <div id="dust-container"></div>
-
     <div id="modal">
         <img id="modal-img" src="" alt="Hidden Treasure">
         <button id="close-btn">닫기</button>
     </div>
 
     <script>
-        /* ================= 설정 영역 ================= */
-        
-        // 홈 이동 주소
         const targetUrl = 'https://mingyunbong-netizen.github.io/home/#';
-
-        // 먼지 사진들 주소
         const imageUrls = [
             'https://i.imgur.com/uNbYHgz.jpeg', 'https://i.imgur.com/yurzaYd.jpeg', 'https://i.imgur.com/fLFmSEz.jpeg', 'https://i.imgur.com/VUPBwNV.jpeg', 'https://i.imgur.com/ytR9hRr.jpeg',
             'https://i.imgur.com/fPilEC5.jpeg', 'https://i.imgur.com/IiDcQf8.jpeg', 'https://i.imgur.com/W0LnO4A.jpeg', 'https://i.imgur.com/80mdaYF.jpeg', 'https://i.imgur.com/2pQl0Ku.jpeg',
@@ -132,55 +74,29 @@
             'https://i.imgur.com/tThOujV.jpeg', 'https://i.imgur.com/Ux6LcGG.jpeg', 'https://i.imgur.com/6GMBV4d.jpeg', 'https://i.imgur.com/RgjtVXV.jpeg', 'https://i.imgur.com/MOf6yfL.jpeg'
         ];
 
-        // 단계별 영상, 팝업 이미지, 팝업 음악 설정
+        // 팝업 음악 빈 칸 유지 (popupAudio: '')
         const stages = [
-            { 
-                video: 'https://i.imgur.com/Yby1eUx.mp4', 
-                popupImage: 'https://i.imgur.com/x4tYCFH.png',
-                // 팝업 음악도 깃허브에 올리셨다면 아래 주소를 바꿔주세요. 지금은 예시 음악입니다.
-                popupAudio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3' 
-            },
-            { 
-                video: 'https://i.imgur.com/YFOmRKT.mp4', 
-                popupImage: 'https://i.imgur.com/aHyGpiw.png',
-                popupAudio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3'
-            },
-            { 
-                video: 'https://i.imgur.com/RaZj9Ph.mp4', 
-                popupImage: 'https://i.imgur.com/QtIYD8y.png',
-                popupAudio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-4.mp3'
-            },
-            { 
-                video: 'https://i.imgur.com/POp3O6s.mp4', 
-                popupImage: 'https://i.imgur.com/7IfZKvD.png',
-                popupAudio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-5.mp3'
-            },
-            { 
-                video: 'https://i.imgur.com/Z8NBWd7.mp4', 
-                popupImage: 'https://i.imgur.com/vr2T2ty.png',
-                popupAudio: 'https://www.soundhelix.com/examples/mp3/SoundHelix-Song-6.mp3'
-            }
+            { video: 'https://i.imgur.com/Yby1eUx.mp4', popupImage: 'https://i.imgur.com/x4tYCFH.png', popupAudio: '' },
+            { video: 'https://i.imgur.com/YFOmRKT.mp4', popupImage: 'https://i.imgur.com/aHyGpiw.png', popupAudio: '' },
+            { video: 'https://i.imgur.com/RaZj9Ph.mp4', popupImage: 'https://i.imgur.com/QtIYD8y.png', popupAudio: '' },
+            { video: 'https://i.imgur.com/POp3O6s.mp4', popupImage: 'https://i.imgur.com/7IfZKvD.png', popupAudio: '' },
+            { video: 'https://i.imgur.com/Z8NBWd7.mp4', popupImage: 'https://i.imgur.com/vr2T2ty.png', popupAudio: '' }
         ];
 
-        /* ================================================================= */
         const particleCount = 1200; 
         const repulseRadius = 90;
         let currentStageIndex = 0;
+        let bgmStarted = false;
         
+        const mainBgm = document.getElementById('main-bgm');
+        const popupAudio = document.getElementById('popup-audio');
         const container = document.getElementById('dust-container');
         const treasureBtn = document.getElementById('treasure-btn');
         const modal = document.getElementById('modal');
         const videoElement = document.getElementById('bg-video');
         const modalImg = document.getElementById('modal-img'); 
-        
-        // 오디오 요소
-        const mainBgm = document.getElementById('main-bgm');
-        const popupAudio = document.getElementById('popup-audio');
-        let bgmStarted = false;
 
-        function goHome() {
-            window.location.href = targetUrl;
-        }
+        function goHome() { window.location.href = targetUrl; }
 
         function initGame() {
             if(stages[0].video) videoElement.src = stages[0].video;
@@ -202,7 +118,6 @@
                 const animDuration = Math.random() * 7 + 5; 
                 const animDelay = Math.random() * -20;
                 wrapper.style.animation = `float ${animDuration}s ease-in-out ${animDelay}s infinite alternate`;
-
                 wrapper.appendChild(img);
                 container.appendChild(wrapper);
             }
@@ -218,43 +133,38 @@
         `;
         document.head.appendChild(styleSheet);
 
-        // [핵심] 배경음악 재생 시도 (사용자가 클릭하거나 움직일 때)
+        // 음악 재생 로직 (무조건 실행)
         function tryPlayBgm() {
             if (!bgmStarted) {
-                mainBgm.volume = 0.5; // 볼륨 50%
+                mainBgm.volume = 0.5; 
                 mainBgm.play().then(() => {
                     bgmStarted = true;
-                    // 한 번 성공하면 이벤트 리스너 제거
-                    document.removeEventListener('click', tryPlayBgm);
-                    document.removeEventListener('mousemove', tryPlayBgm);
+                    // 클릭 이벤트 제거
+                    document.body.removeEventListener('click', tryPlayBgm);
+                    document.body.removeEventListener('mousemove', tryPlayBgm);
                 }).catch(e => {
-                    // 아직 권한이 없으면 무시
+                    // 아직 권한 없음
                 });
             }
         }
-        document.addEventListener('click', tryPlayBgm);
-        document.addEventListener('mousemove', tryPlayBgm);
+        document.body.addEventListener('click', tryPlayBgm);
+        document.body.addEventListener('mousemove', tryPlayBgm);
 
-        // 마우스로 먼지 밀어내기
         document.addEventListener('mousemove', (e) => {
+            if(modal.style.display === 'flex') return;
+
             const photos = document.querySelectorAll('.dust-photo');
             const mouseX = e.clientX;
             const mouseY = e.clientY;
-
             photos.forEach(photo => {
                 const rect = photo.getBoundingClientRect();
-                const photoX = rect.left + rect.width / 2;
-                const photoY = rect.top + rect.height / 2;
-                const distX = mouseX - photoX;
-                const distY = mouseY - photoY;
+                const distX = mouseX - (rect.left + rect.width / 2);
+                const distY = mouseY - (rect.top + rect.height / 2);
                 const distance = Math.sqrt(distX * distX + distY * distY);
-
                 if (distance < repulseRadius) {
                     const angle = Math.atan2(distY, distX);
                     const force = (repulseRadius - distance) / repulseRadius;
-                    const moveX = Math.cos(angle) * force * -150; 
-                    const moveY = Math.sin(angle) * force * -150;
-                    photo.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                    photo.style.transform = `translate(${Math.cos(angle)*force*-150}px, ${Math.sin(angle)*force*-150}px)`;
                 } else {
                     photo.style.transform = `translate(0, 0)`;
                 }
@@ -266,15 +176,18 @@
             treasureBtn.style.top = `${Math.random() * 90 + 5}%`;
         }
 
-        // 보물 발견 (클릭)
         treasureBtn.addEventListener('click', (e) => {
-            // 이벤트 버블링 방지 (배경음악 로직과 겹치지 않게)
-            e.stopPropagation();
+            // 이벤트 전파 방지 (제거 안 함)
+            // 대신 여기서 강제로 재생 시도
+            tryPlayBgm();
+            
+            // 배경음악 멈춤
+            setTimeout(() => { if(bgmStarted) mainBgm.pause(); }, 50);
 
             const wrappers = document.querySelectorAll('.dust-wrapper');
-            wrappers.forEach(p => {
+            wrappers.forEach(p => { 
                 p.style.opacity = '0'; 
-                p.style.transition = 'opacity 0.5s';
+                p.style.transition = 'opacity 0.5s'; 
             });
             treasureBtn.style.display = 'none';
             
@@ -282,24 +195,19 @@
                 const stage = stages[currentStageIndex];
                 modalImg.src = stage.popupImage;
                 
-                // 배경음악 멈추고 팝업 음악 재생
-                mainBgm.pause();
-                
-                if(stage.popupAudio) {
+                if (stage.popupAudio && stage.popupAudio !== '') {
                     popupAudio.src = stage.popupAudio;
-                    popupAudio.play().catch(e => console.log('팝업 오디오 재생 실패'));
+                    popupAudio.play().catch(e => {});
                 }
 
                 modal.style.display = 'flex'; 
             }, 500);
         });
 
-        // 닫기 버튼
         document.getElementById('close-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             modal.style.display = 'none';
             
-            // 팝업 음악 끄고 배경음악 다시 재생
             popupAudio.pause();
             popupAudio.currentTime = 0;
 
@@ -307,10 +215,9 @@
 
             currentStageIndex = (currentStageIndex + 1) % stages.length;
             videoElement.src = stages[currentStageIndex].video; 
-            
             const colors = ['#111', '#121', '#211', '#112', '#222'];
             videoElement.style.background = colors[currentStageIndex];
-
+            
             const wrappers = document.querySelectorAll('.dust-wrapper');
             wrappers.forEach(p => { p.style.opacity = '1'; });
             
