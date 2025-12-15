@@ -74,9 +74,9 @@
             'https://i.imgur.com/tThOujV.jpeg', 'https://i.imgur.com/Ux6LcGG.jpeg', 'https://i.imgur.com/6GMBV4d.jpeg', 'https://i.imgur.com/RgjtVXV.jpeg', 'https://i.imgur.com/MOf6yfL.jpeg'
         ];
 
-        // 팝업 음악 빈 칸 유지 (popupAudio: '')
+        // [수정 완료] 첫 번째 팝업에 '1.mp3' 연결함
         const stages = [
-            { video: 'https://i.imgur.com/Yby1eUx.mp4', popupImage: 'https://i.imgur.com/x4tYCFH.png', popupAudio: '' },
+            { video: 'https://i.imgur.com/Yby1eUx.mp4', popupImage: 'https://i.imgur.com/x4tYCFH.png', popupAudio: 'https://sieunpark1023.github.io/1.mp3' }, // 여기가 1번
             { video: 'https://i.imgur.com/YFOmRKT.mp4', popupImage: 'https://i.imgur.com/aHyGpiw.png', popupAudio: '' },
             { video: 'https://i.imgur.com/RaZj9Ph.mp4', popupImage: 'https://i.imgur.com/QtIYD8y.png', popupAudio: '' },
             { video: 'https://i.imgur.com/POp3O6s.mp4', popupImage: 'https://i.imgur.com/7IfZKvD.png', popupAudio: '' },
@@ -133,17 +133,15 @@
         `;
         document.head.appendChild(styleSheet);
 
-        // 음악 재생 로직 (무조건 실행)
+        // 음악 재생 로직
         function tryPlayBgm() {
             if (!bgmStarted) {
                 mainBgm.volume = 0.5; 
                 mainBgm.play().then(() => {
                     bgmStarted = true;
-                    // 클릭 이벤트 제거
                     document.body.removeEventListener('click', tryPlayBgm);
                     document.body.removeEventListener('mousemove', tryPlayBgm);
                 }).catch(e => {
-                    // 아직 권한 없음
                 });
             }
         }
@@ -177,13 +175,12 @@
         }
 
         treasureBtn.addEventListener('click', (e) => {
-            // 이벤트 전파 방지 (제거 안 함)
-            // 대신 여기서 강제로 재생 시도
             tryPlayBgm();
             
-            // 배경음악 멈춤
+            // + 누르면 배경음악 멈춤
             setTimeout(() => { if(bgmStarted) mainBgm.pause(); }, 50);
 
+            // 먼지 사라지는 효과 (멈추지 않고 둥둥 떠다니며 투명해짐)
             const wrappers = document.querySelectorAll('.dust-wrapper');
             wrappers.forEach(p => { 
                 p.style.opacity = '0'; 
@@ -195,6 +192,7 @@
                 const stage = stages[currentStageIndex];
                 modalImg.src = stage.popupImage;
                 
+                // [팝업 음악 재생 로직]
                 if (stage.popupAudio && stage.popupAudio !== '') {
                     popupAudio.src = stage.popupAudio;
                     popupAudio.play().catch(e => {});
@@ -208,9 +206,11 @@
             e.stopPropagation();
             modal.style.display = 'none';
             
+            // 팝업 음악 끄기
             popupAudio.pause();
             popupAudio.currentTime = 0;
 
+            // 배경음악 다시 켜기
             if(bgmStarted) mainBgm.play();
 
             currentStageIndex = (currentStageIndex + 1) % stages.length;
@@ -218,6 +218,7 @@
             const colors = ['#111', '#121', '#211', '#112', '#222'];
             videoElement.style.background = colors[currentStageIndex];
             
+            // 먼지 다시 나타나기
             const wrappers = document.querySelectorAll('.dust-wrapper');
             wrappers.forEach(p => { p.style.opacity = '1'; });
             
