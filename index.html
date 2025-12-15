@@ -24,6 +24,7 @@
             text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #ff00de, 0 0 40px #ff00de;
         }
 
+        /* 먼지 스타일 (원래대로 복구) */
         .dust-wrapper { position: absolute; z-index: 3; pointer-events: none; }
         .dust-photo { width: 100%; height: auto; display: block; cursor: pointer; pointer-events: auto; }
 
@@ -74,9 +75,9 @@
             'https://i.imgur.com/tThOujV.jpeg', 'https://i.imgur.com/Ux6LcGG.jpeg', 'https://i.imgur.com/6GMBV4d.jpeg', 'https://i.imgur.com/RgjtVXV.jpeg', 'https://i.imgur.com/MOf6yfL.jpeg'
         ];
 
-        // [수정 완료] 첫 번째 팝업에 '1.mp3' 연결함
+        // [설정] 1번 팝업에만 1.mp3 연결 (나머지는 비워둠)
         const stages = [
-            { video: 'https://i.imgur.com/Yby1eUx.mp4', popupImage: 'https://i.imgur.com/x4tYCFH.png', popupAudio: 'https://sieunpark1023.github.io/1.mp3' }, // 여기가 1번
+            { video: 'https://i.imgur.com/Yby1eUx.mp4', popupImage: 'https://i.imgur.com/x4tYCFH.png', popupAudio: 'https://sieunpark1023.github.io/1.mp3' },
             { video: 'https://i.imgur.com/YFOmRKT.mp4', popupImage: 'https://i.imgur.com/aHyGpiw.png', popupAudio: '' },
             { video: 'https://i.imgur.com/RaZj9Ph.mp4', popupImage: 'https://i.imgur.com/QtIYD8y.png', popupAudio: '' },
             { video: 'https://i.imgur.com/POp3O6s.mp4', popupImage: 'https://i.imgur.com/7IfZKvD.png', popupAudio: '' },
@@ -133,7 +134,7 @@
         `;
         document.head.appendChild(styleSheet);
 
-        // 음악 재생 로직
+        // 배경음악 재생 로직
         function tryPlayBgm() {
             if (!bgmStarted) {
                 mainBgm.volume = 0.5; 
@@ -141,13 +142,13 @@
                     bgmStarted = true;
                     document.body.removeEventListener('click', tryPlayBgm);
                     document.body.removeEventListener('mousemove', tryPlayBgm);
-                }).catch(e => {
-                });
+                }).catch(e => { console.log('BGM 재생 대기 중'); });
             }
         }
         document.body.addEventListener('click', tryPlayBgm);
         document.body.addEventListener('mousemove', tryPlayBgm);
 
+        // 먼지 마우스 인터랙션
         document.addEventListener('mousemove', (e) => {
             if(modal.style.display === 'flex') return;
 
@@ -174,13 +175,15 @@
             treasureBtn.style.top = `${Math.random() * 90 + 5}%`;
         }
 
+        // 보물 클릭 이벤트
         treasureBtn.addEventListener('click', (e) => {
+            // 버튼 눌러도 오디오 재생 권한 획득 시도 (필수)
             tryPlayBgm();
             
-            // + 누르면 배경음악 멈춤
+            // 배경음악 멈춤
             setTimeout(() => { if(bgmStarted) mainBgm.pause(); }, 50);
 
-            // 먼지 사라지는 효과 (멈추지 않고 둥둥 떠다니며 투명해짐)
+            // 먼지 투명하게 (원래 애니메이션 유지)
             const wrappers = document.querySelectorAll('.dust-wrapper');
             wrappers.forEach(p => { 
                 p.style.opacity = '0'; 
@@ -192,7 +195,7 @@
                 const stage = stages[currentStageIndex];
                 modalImg.src = stage.popupImage;
                 
-                // [팝업 음악 재생 로직]
+                // 팝업 음악 재생 (주소가 있는 경우에만)
                 if (stage.popupAudio && stage.popupAudio !== '') {
                     popupAudio.src = stage.popupAudio;
                     popupAudio.play().catch(e => {});
@@ -202,15 +205,14 @@
             }, 500);
         });
 
+        // 닫기 버튼 이벤트
         document.getElementById('close-btn').addEventListener('click', (e) => {
             e.stopPropagation();
             modal.style.display = 'none';
             
-            // 팝업 음악 끄기
             popupAudio.pause();
             popupAudio.currentTime = 0;
 
-            // 배경음악 다시 켜기
             if(bgmStarted) mainBgm.play();
 
             currentStageIndex = (currentStageIndex + 1) % stages.length;
@@ -218,7 +220,7 @@
             const colors = ['#111', '#121', '#211', '#112', '#222'];
             videoElement.style.background = colors[currentStageIndex];
             
-            // 먼지 다시 나타나기
+            // 먼지 다시 보이기
             const wrappers = document.querySelectorAll('.dust-wrapper');
             wrappers.forEach(p => { p.style.opacity = '1'; });
             
