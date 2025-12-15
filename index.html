@@ -3,30 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Treasure Hunt Art (Sieun's World)</title>
+    <title>Treasure Hunt Art</title>
     <style>
         body, html { margin: 0; padding: 0; width: 100%; height: 100%; overflow: hidden; background: #000; }
         
+        /* 로고 */
         #logo {
             cursor: pointer; position: fixed; top: 20px; left: 20px;
             font-size: 24px; font-weight: bold; font-family: 'BookkGothic', sans-serif;
             color: #fff; z-index: 100; text-shadow: 0 0 5px rgba(0,0,0,0.5);
         }
 
+        /* 비디오 */
         #bg-video {
             position: absolute; top: 0; left: 0; width: 100%; height: 100%;
             object-fit: cover; z-index: 1; opacity: 0.8; transition: opacity 1s;
         }
 
+        /* 보물찾기 버튼 */
         #treasure-btn {
             position: absolute; font-size: 25px; font-weight: 900; color: #fff; cursor: pointer;
             z-index: 2; user-select: none;
             text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #ff00de, 0 0 40px #ff00de;
         }
 
+        /* 먼지들 */
         .dust-wrapper { position: absolute; z-index: 3; pointer-events: none; }
         .dust-photo { width: 100%; height: auto; display: block; cursor: pointer; pointer-events: auto; }
 
+        /* 팝업창 */
         #modal {
             display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); 
             max-width: 98vw; max-height: 98vh; padding: 10px;
@@ -48,8 +53,6 @@
         <source src="https://sieunpark1023.github.io/bg.mp3" type="audio/mp3">
     </audio>
 
-    <audio id="popup-audio" loop></audio>
-
     <div id="logo" onclick="goHome()">서사, 위기속에서</div>
     <video id="bg-video" autoplay muted loop playsinline><source src="" type="video/mp4"></video>
     <div id="treasure-btn">+</div>
@@ -62,6 +65,7 @@
     <script>
         const targetUrl = 'https://mingyunbong-netizen.github.io/home/#';
         
+        // 먼지 이미지들
         const imageUrls = [
             'https://i.imgur.com/uNbYHgz.jpeg', 'https://i.imgur.com/yurzaYd.jpeg', 'https://i.imgur.com/fLFmSEz.jpeg', 'https://i.imgur.com/VUPBwNV.jpeg', 'https://i.imgur.com/ytR9hRr.jpeg',
             'https://i.imgur.com/fPilEC5.jpeg', 'https://i.imgur.com/IiDcQf8.jpeg', 'https://i.imgur.com/W0LnO4A.jpeg', 'https://i.imgur.com/80mdaYF.jpeg', 'https://i.imgur.com/2pQl0Ku.jpeg',
@@ -75,16 +79,13 @@
             'https://i.imgur.com/tThOujV.jpeg', 'https://i.imgur.com/Ux6LcGG.jpeg', 'https://i.imgur.com/6GMBV4d.jpeg', 'https://i.imgur.com/RgjtVXV.jpeg', 'https://i.imgur.com/MOf6yfL.jpeg'
         ];
 
-        /* [빈 칸 설명] 
-           나중에 팝업 음악을 넣고 싶으면, popupAudio: '' 따옴표 사이에 주소를 넣으세요.
-           예시: popupAudio: 'https://sieunpark1023.github.io/pop1.mp3'
-        */
+        // [수정됨] 이상한 노래 나오는 부분 싹 지웠습니다!
         const stages = [
-            { video: 'https://i.imgur.com/Yby1eUx.mp4', popupImage: 'https://i.imgur.com/x4tYCFH.png', popupAudio: '' },
-            { video: 'https://i.imgur.com/YFOmRKT.mp4', popupImage: 'https://i.imgur.com/aHyGpiw.png', popupAudio: '' },
-            { video: 'https://i.imgur.com/RaZj9Ph.mp4', popupImage: 'https://i.imgur.com/QtIYD8y.png', popupAudio: '' },
-            { video: 'https://i.imgur.com/POp3O6s.mp4', popupImage: 'https://i.imgur.com/7IfZKvD.png', popupAudio: '' },
-            { video: 'https://i.imgur.com/Z8NBWd7.mp4', popupImage: 'https://i.imgur.com/vr2T2ty.png', popupAudio: '' }
+            { video: 'https://i.imgur.com/Yby1eUx.mp4', popupImage: 'https://i.imgur.com/x4tYCFH.png' },
+            { video: 'https://i.imgur.com/YFOmRKT.mp4', popupImage: 'https://i.imgur.com/aHyGpiw.png' },
+            { video: 'https://i.imgur.com/RaZj9Ph.mp4', popupImage: 'https://i.imgur.com/QtIYD8y.png' },
+            { video: 'https://i.imgur.com/POp3O6s.mp4', popupImage: 'https://i.imgur.com/7IfZKvD.png' },
+            { video: 'https://i.imgur.com/Z8NBWd7.mp4', popupImage: 'https://i.imgur.com/vr2T2ty.png' }
         ];
 
         const particleCount = 1200; 
@@ -93,7 +94,6 @@
         let bgmStarted = false;
         
         const mainBgm = document.getElementById('main-bgm');
-        const popupAudio = document.getElementById('popup-audio'); // 팝업 오디오 장치
         const container = document.getElementById('dust-container');
         const treasureBtn = document.getElementById('treasure-btn');
         const modal = document.getElementById('modal');
@@ -137,17 +137,22 @@
         `;
         document.head.appendChild(styleSheet);
 
-        // 배경음악 재생 로직
+        // [중요] 배경음악 재생 로직
+        // 사파리에서는 사용자가 '클릭'을 해야만 소리가 나옵니다.
         function tryPlayBgm() {
             if (!bgmStarted) {
                 mainBgm.volume = 0.5; 
                 mainBgm.play().then(() => {
                     bgmStarted = true;
+                    // 소리가 나오기 시작하면 클릭 감지 기능을 끕니다
                     document.body.removeEventListener('click', tryPlayBgm);
                     document.body.removeEventListener('mousemove', tryPlayBgm);
-                }).catch(e => { console.log("아직 클릭 안함"); });
+                }).catch(e => {
+                    console.log("아직 클릭 안함");
+                });
             }
         }
+        // 화면 어디든 클릭하면 노래 시작
         document.body.addEventListener('click', tryPlayBgm);
         document.body.addEventListener('mousemove', tryPlayBgm);
 
@@ -176,9 +181,9 @@
         }
 
         treasureBtn.addEventListener('click', (e) => {
-            e.stopPropagation();
+            e.stopPropagation(); // 버튼 눌렀을 때 배경음악 재생 로직이랑 겹치지 않게
             
-            // + 누르면 배경음악 멈춤
+            // + 누르면 배경음악 잠시 멈춤
             mainBgm.pause();
 
             const wrappers = document.querySelectorAll('.dust-wrapper');
@@ -188,13 +193,6 @@
             setTimeout(() => {
                 const stage = stages[currentStageIndex];
                 modalImg.src = stage.popupImage;
-                
-                // [빈 칸 로직] 만약 빈 칸에 주소가 채워져 있다면 재생해라!
-                if (stage.popupAudio && stage.popupAudio !== '') {
-                    popupAudio.src = stage.popupAudio;
-                    popupAudio.play().catch(e => console.log('재생 실패'));
-                }
-
                 modal.style.display = 'flex'; 
             }, 500);
         });
@@ -203,10 +201,7 @@
             e.stopPropagation();
             modal.style.display = 'none';
             
-            // 팝업 음악 끄고 배경음악 다시 재생
-            popupAudio.pause();
-            popupAudio.currentTime = 0; // 음악 처음으로 되감기
-
+            // 닫으면 배경음악 다시 재생
             if(bgmStarted) mainBgm.play();
 
             currentStageIndex = (currentStageIndex + 1) % stages.length;
